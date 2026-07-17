@@ -16,18 +16,5 @@
   "last_page": "conclusion",
   "local_dashboards": {},
   "artifacts_bucket": "DineshAI/vMcu1h3fOV-artifacts",
-  "local_path_artifacts": [
-    {
-      "path": "outputs/c1_sparse_robust.csv",
-      "abs_path": "/home/dineshai/Drives/Code/AllCode/ReproduceICML/papers/icml26-repro-vMcu1h3fOV-joint-ard-sparsification/outputs/c1_sparse_robust.csv",
-      "size": 1095,
-      "artifact_type": "dataset"
-    },
-    {
-      "path": "outputs/c2_closed_form_ascent.csv",
-      "abs_path": "/home/dineshai/Drives/Code/AllCode/ReproduceICML/papers/icml26-repro-vMcu1h3fOV-joint-ard-sparsification/outputs/c2_closed_form_ascent.csv",
-      "size": 344,
-      "artifact_type": "dataset"
-    }
-  ]
+  "local_path_artifacts": []
 }
