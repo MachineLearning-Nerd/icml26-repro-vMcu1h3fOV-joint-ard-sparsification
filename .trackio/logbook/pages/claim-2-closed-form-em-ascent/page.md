@@ -142,7 +142,7 @@ Wrote c1_sparse_robust.csv, c2_closed_form_ascent.csv, summary.json
 -->
 **📦 Artifact** `outputs/c1_sparse_robust.csv` · dataset · 1.1 kB
 
-trackio-local-path://outputs/c1_sparse_robust.csv
+trackio-artifact://outputs/c1_sparse_robust.csv
 
 
 ---
@@ -151,7 +151,7 @@ trackio-local-path://outputs/c1_sparse_robust.csv
 -->
 **📦 Artifact** `outputs/c2_closed_form_ascent.csv` · dataset · 344 B
 
-trackio-local-path://outputs/c2_closed_form_ascent.csv
+trackio-artifact://outputs/c2_closed_form_ascent.csv
 
 
 ---
