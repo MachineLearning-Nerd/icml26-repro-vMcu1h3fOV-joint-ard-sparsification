@@ -1,0 +1,23 @@
+{
+  "paper": "Joint Model and Data Sparsification via Marginal Likelihood (arXiv 2605.29908)",
+  "claims": {
+    "C1_sparse_robust": {
+      "claim": "C1 sparse + robust",
+      "trials": 10,
+      "joint_lower_rmse_fraction": 1.0,
+      "sparsity_recovered_fraction": 1.0,
+      "outliers_downweighted_fraction": 1.0,
+      "joint_robust_and_sparse": true
+    },
+    "C2_closed_form_ascent": {
+      "claim": "C2 closed-form + EM ascent",
+      "cases": 8,
+      "all_EM_ascent": true,
+      "all_posterior_closed_form": 1.0
+    }
+  },
+  "verdict": {
+    "C1_verified": true,
+    "C2_verified": 1.0
+  }
+}
