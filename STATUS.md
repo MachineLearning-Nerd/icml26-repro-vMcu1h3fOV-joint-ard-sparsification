@@ -1,6 +1,7 @@
 # STATUS — Joint ARD Sparsification (`vMcu1h3fOV`)
 
-**Session:** NewPaper. **Last updated:** 2026-07-17. **State:** locally complete; GitHub push pending; HF queued.
+**Session:** perfect-score campaign. **Last updated:** 2026-07-19.
+**State:** official 3/4; exactly-10 Claim-1 paper-scale repair scoped.
 
 ## Source
 - arXiv 2605.29908. Clean-room from PDF (standard SBL/ARD + per-sample noise).
@@ -14,5 +15,10 @@
 - Trackio complete/tagged/pinned/command-captured.
 
 ## Next
-- Push GitHub `MachineLearning-Nerd/icml26-repro-vMcu1h3fOV-joint-ard-sparsification`.
-- Publish `DineshAI/vMcu1h3fOV` after HF quota reset; verify tags/bucket; `under_verdict`.
+- Freeze and execute exactly 10 Claim-1 routes: the paper's n=500,d=50
+  synthetic experiment plus its nine real tabular datasets. Do not add route 11.
+- Preserve the author repository audit: pinned HEAD `58908b8` currently has no
+  released experiment code despite the paper's availability statement.
+- Require paper-scale row counts, clean/10%-contaminated conditions, realistic
+  baselines, uncertainty, raw results, fail-closed verification, public
+  readback, and an exact-SHA official 4/4 verdict.
