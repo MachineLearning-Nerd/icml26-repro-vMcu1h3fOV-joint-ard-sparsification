@@ -1,9 +1,9 @@
 # STATUS — Joint ARD Sparsification (`vMcu1h3fOV`)
 
 **Session:** perfect-score campaign. **Last updated:** 2026-07-19.
-**State:** official 3/4 at stale SHA; exactly-10 Claim-1 paper-scale repair
-published at exact Space SHA `21814bf540fe8842297d84c2e71a89fbe1ebe5df`,
-awaiting an exact-SHA official re-verdict.
+**State:** official high-quality **4/4** at exact Space SHA
+`21814bf540fe8842297d84c2e71a89fbe1ebe5df`; both claims are `verified`.
+Judged at `2026-07-19T00:34:29Z`.
 
 ## Source
 - arXiv 2605.29908. Clean-room from PDF (standard SBL/ARD + per-sample noise).
@@ -23,4 +23,4 @@ awaiting an exact-SHA official re-verdict.
   released experiment code despite the paper's availability statement.
 - Public anonymous readback passes: Space RUNNING, routes 1–10, 360 rows, one
   pin, 5,224 agent-view tokens, no host paths, and two exact-hash artifacts.
-- Require an exact-SHA official 4/4 verdict before calling this paper perfect.
+- Exact-SHA official high-quality 4/4 is recorded. No further repair work.
