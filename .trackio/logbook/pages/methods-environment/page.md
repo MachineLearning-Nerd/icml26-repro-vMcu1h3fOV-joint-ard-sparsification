@@ -110,3 +110,21 @@ def test_negative_feature_only_no_per_sample():
 **Environment:** Python 3.12, numpy; CPU, <1 s.
 
 **Implementation (repro/src):** `ard.py` (closed-form marginal likelihood, Gaussian posterior, EM/MacKay γ & λ updates, joint vs feature-only fit, predict); `run_claims.py` (orchestrator). 8/8 pytest tests: marginal-likelihood-is-Gaussian, posterior-definition, EM-ascent (joint & feature-only), sparsity recovery, outlier down-weighting, robustness vs feature-only, negative control (feature-only = homoscedastic, no per-sample λ).
+
+
+---
+<!-- trackio-cell
+{"type": "code", "id": "cell_59d23776eab8", "created_at": "2026-07-19T00:22:15+00:00", "title": "Expanded repair test suite (22 tests)", "command": [".venv/bin/python", "-m", "pytest", "repro/tests", "-q"], "exit_code": 0, "duration_s": 2.875}
+-->
+````bash
+$ .venv/bin/python -m pytest repro/tests -q
+````
+
+exit 0 · 2.9s
+
+
+````output
+......................                                                   [100%]
+22 passed in 2.44s
+
+````

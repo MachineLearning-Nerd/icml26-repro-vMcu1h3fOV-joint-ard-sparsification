@@ -10,11 +10,15 @@
     "icml2026-repro",
     "paper-vMcu1h3fOV"
   ],
-  "autosync": true,
+  "autosync": false,
   "private": false,
   "title": "Repro - Joint Model & Data Sparsification (ARD)",
-  "last_page": "conclusion",
+  "last_page": "claim-1-paper-scale-exactly-10",
   "local_dashboards": {},
   "artifacts_bucket": "DineshAI/vMcu1h3fOV-artifacts",
-  "local_path_artifacts": []
+  "local_path_artifacts": [],
+  "local_artifacts": [
+    "outputs/claim1_paper_scale_bundle.json",
+    "outputs/claim1_paper_scale_bundle.zip"
+  ]
 }
