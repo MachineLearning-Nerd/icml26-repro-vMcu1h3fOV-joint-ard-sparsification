@@ -690,3 +690,10 @@ BUNDLE_PASS files=26 bytes=51017 sha256=b33cf6fbe9e95ae97bcb1004bfe98c3703ec69db
 {"type": "markdown", "id": "cell_3429839c1c9e", "created_at": "2026-07-19T00:26:19+00:00", "title": "Canonical bundle digests"}
 -->
 The two artifact cells above contain the same canonical 26-file evidence payload. ZIP SHA-256: b33cf6fbe9e95ae97bcb1004bfe98c3703ec69db353a8cdb53e1238bde2eff53. Agent-readable JSON SHA-256: ca663941baaf5d84171b4cfd5167b3e6a901792148963340dcee8b6684c0dafe. The JSON is 131,560 bytes; the ZIP is 51,017 bytes and includes MANIFEST.sha256.
+
+
+---
+<!-- trackio-cell
+{"type": "markdown", "id": "cell_63415861d4e5", "created_at": "2026-07-19T00:27:35+00:00", "title": "Direct public evidence links"}
+-->
+Trackio artifact-bucket creation is rate-limited, so the same canonical payload is also stored directly in this existing public Space. Agent-readable JSON: https://huggingface.co/spaces/DineshAI/vMcu1h3fOV/resolve/main/evidence/claim1_paper_scale_bundle.json . Deterministic ZIP with MANIFEST.sha256: https://huggingface.co/spaces/DineshAI/vMcu1h3fOV/resolve/main/evidence/claim1_paper_scale_bundle.zip . Source and raw CSVs are also pinned at GitHub commit b041cf1796c2fc494aaf05abbcb33379a1a047a7.
