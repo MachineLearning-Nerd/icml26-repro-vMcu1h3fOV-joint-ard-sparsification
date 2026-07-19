@@ -54,6 +54,11 @@ def fit_sbl(
     gamma = np.ones(d)
     base_var = max(float(np.var(y)) * 0.1, 1e-3)
     noise_var = np.full(n, base_var)
+    xtx = X.T @ X
+    xty = X.T @ y
+    weighted_gram = xtx / base_var
+    weighted_rhs = xty / base_var
+    weighted_dirty = False
     patience = 0
     converged = False
     coef = np.zeros(d)
@@ -61,9 +66,20 @@ def fit_sbl(
 
     for iteration in range(1, max_iter + 1):
         weights = 1.0 / noise_var
-        precision = np.diag(gamma) + X.T @ (weights[:, None] * X)
+        if heteroscedastic:
+            # lambda changes only after warm-up and every K iterations.  Cache
+            # X'Lambda^-1X between those updates; recomputing it dominated the
+            # paper-scale synthetic grids without changing the mathematics.
+            if weighted_dirty:
+                weighted_gram = X.T @ (weights[:, None] * X)
+                weighted_rhs = X.T @ (weights * y)
+                weighted_dirty = False
+        else:
+            weighted_gram = weights[0] * xtx
+            weighted_rhs = weights[0] * xty
+        precision = np.diag(gamma) + weighted_gram
         factor = cho_factor(precision, lower=True, check_finite=False)
-        coef = cho_solve(factor, X.T @ (weights * y), check_finite=False)
+        coef = cho_solve(factor, weighted_rhs, check_finite=False)
         covariance = cho_solve(factor, np.eye(d), check_finite=False)
         covariance_diag = np.maximum(np.diag(covariance), 1e-12)
 
@@ -78,10 +94,13 @@ def fit_sbl(
         log_noise_old = np.log(noise_var)
         if update_noise:
             residual = y - X @ coef
-            leverage_var = np.einsum("ij,jk,ik->i", X, covariance, X, optimize=True)
-            target = np.maximum(residual * residual + leverage_var, 1e-8)
-            if not heteroscedastic:
-                target = np.full(n, float(np.mean(target)))
+            if heteroscedastic:
+                leverage_var = np.einsum("ij,jk,ik->i", X, covariance, X, optimize=True)
+                target = np.maximum(residual * residual + leverage_var, 1e-8)
+            else:
+                # mean(diag(X Sigma X')) = trace(Sigma X'X) / n.
+                mean_leverage = float(np.sum(covariance * xtx) / n)
+                target = np.full(n, float(np.mean(residual * residual) + mean_leverage))
             # Appendix D.1 recommends clipping to prevent the n extra noise
             # parameters from explaining away residual structure.  A broad
             # two-decade window keeps real outliers separable without allowing
@@ -90,6 +109,7 @@ def fit_sbl(
             ceiling = max(float(np.median(target)) * 100.0, 10.0)
             target = np.clip(target, floor, ceiling)
             noise_var = np.exp((1.0 - damping) * log_noise_old + damping * np.log(target))
+            weighted_dirty = heteroscedastic
 
         delta_gamma = np.max(np.abs(np.log(gamma) - log_gamma_old)) / (
             1.0 + np.max(np.abs(np.log(gamma)))
@@ -107,8 +127,14 @@ def fit_sbl(
 
     # Recompute the posterior at final hyperparameters, as required by Alg. 1.
     weights = 1.0 / noise_var
-    precision = np.diag(gamma) + X.T @ (weights[:, None] * X)
+    if heteroscedastic:
+        weighted_gram = X.T @ (weights[:, None] * X)
+        weighted_rhs = X.T @ (weights * y)
+    else:
+        weighted_gram = weights[0] * xtx
+        weighted_rhs = weights[0] * xty
+    precision = np.diag(gamma) + weighted_gram
     factor = cho_factor(precision, lower=True, check_finite=False)
-    coef = cho_solve(factor, X.T @ (weights * y), check_finite=False)
+    coef = cho_solve(factor, weighted_rhs, check_finite=False)
     covariance_diag = np.diag(cho_solve(factor, np.eye(d), check_finite=False))
     return SBLFit(coef, covariance_diag, gamma, noise_var, iteration, converged)

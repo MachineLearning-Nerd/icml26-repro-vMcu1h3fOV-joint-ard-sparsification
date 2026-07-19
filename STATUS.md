@@ -1,7 +1,7 @@
 # STATUS — Joint ARD Sparsification (`vMcu1h3fOV`)
 
 **Session:** perfect-score campaign. **Last updated:** 2026-07-19.
-**State:** official 3/4; exactly-10 Claim-1 paper-scale repair scoped.
+**State:** official 3/4; exactly-10 Claim-1 paper-scale repair locally complete.
 
 ## Source
 - arXiv 2605.29908. Clean-room from PDF (standard SBL/ARD + per-sample noise).
@@ -15,10 +15,9 @@
 - Trackio complete/tagged/pinned/command-captured.
 
 ## Next
-- Freeze and execute exactly 10 Claim-1 routes: the paper's n=500,d=50
-  synthetic experiment plus its nine real tabular datasets. Do not add route 11.
+- Exactly 10 Claim-1 routes are complete: 9 support, 1 (Protein) is adverse and
+  retained. There are 360 decisive raw rows; fail-closed verification passes.
 - Preserve the author repository audit: pinned HEAD `58908b8` currently has no
   released experiment code despite the paper's availability statement.
-- Require paper-scale row counts, clean/10%-contaminated conditions, realistic
-  baselines, uncertainty, raw results, fail-closed verification, public
-  readback, and an exact-SHA official 4/4 verdict.
+- Finalize the Trackio report with the adverse result and limitations, publish,
+  perform anonymous readback, then require an exact-SHA official 4/4 verdict.

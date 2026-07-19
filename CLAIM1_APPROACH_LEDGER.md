@@ -22,18 +22,23 @@ Pinned primary sources:
 
 | # | Approach | Paper-scale decisive output | State |
 |---:|---|---|---|
-| 1 | Synthetic sparse-signal and outlier recovery | n=500, d=50, ntest=1,000; paper sparsity/noise/contamination grid; ten trials | planned |
-| 2 | Boston tabular regression | n=506, d=13; clean + 10% contamination; joint vs homoscedastic/sparse/robust baselines | planned |
-| 3 | Yacht tabular regression | n=308, d=6; same frozen tabular protocol | planned |
-| 4 | Concrete tabular regression | n=1,030, d=8; same frozen tabular protocol | planned |
-| 5 | Energy tabular regression | n=768, d=8; first target; same frozen tabular protocol | planned |
-| 6 | Carbon tabular regression | n=10,721, d=5; first target; capped paper training split | planned |
-| 7 | Protein tabular regression | n=45,730, d=9; capped paper training split | planned |
-| 8 | Power tabular regression | n=9,568, d=4; capped paper training split | planned |
-| 9 | Kin8nm tabular regression | n=8,192, d=8; capped paper training split | planned |
-| 10 | Elevators tabular regression | n=16,599, d=18; capped paper training split | planned |
+| 1 | Synthetic sparse-signal and outlier recovery | n=500, d=50, ntest=1,000; 18 grid cells × ten trials | complete—supports |
+| 2 | Boston tabular regression | n=506, d=13; clean + 10% contamination; joint vs homoscedastic/sparse/robust baselines | complete—supports |
+| 3 | Yacht tabular regression | n=308, d=6; same frozen tabular protocol | complete—supports |
+| 4 | Concrete tabular regression | n=1,030, d=8; same frozen tabular protocol | complete—supports |
+| 5 | Energy tabular regression | n=768, d=8; first target; same frozen tabular protocol | complete—supports |
+| 6 | Carbon tabular regression | n=10,721, d=5; first target; capped paper training split | complete—supports |
+| 7 | Protein tabular regression | n=45,730, d=9; capped paper training split | complete—adverse predictive RMSE retained |
+| 8 | Power tabular regression | n=9,568, d=4; capped paper training split | complete—supports |
+| 9 | Kin8nm tabular regression | n=8,192, d=8; capped paper training split | complete—supports |
+| 10 | Elevators tabular regression | n=16,599, d=18; capped paper training split | complete—supports |
 
 Fail-closed invariant: the final machine-readable result must report
 `approaches_executed == 10`, contain route numbers 1 through 10 exactly once,
 and reject any route numbered 11 or higher. All failed, mixed, or adverse
 results remain attached to their original route rather than being replaced.
+
+Final invariant: `approaches_executed=10`, `approaches_supported=9`,
+`approaches_adverse_or_mixed=1`, `route_11_executed=false`. Protein route 7
+continues to identify injected outliers and sparse weights but loses predictive
+RMSE; three Appendix-D.1 schedule variants preserve that adverse result.

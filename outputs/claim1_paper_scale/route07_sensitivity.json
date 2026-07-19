@@ -1,0 +1,51 @@
+{
+  "adds_approach": false,
+  "approach": "Protein",
+  "conclusion": "Adverse predictive result persists across Appendix-D.1 schedules.",
+  "kind": "within-route sensitivity",
+  "model_only_rmse": 5.219210626981771,
+  "route": 7,
+  "schedules": [
+    {
+      "converged": false,
+      "data_ess": 0.5034814607463132,
+      "max_iter": 80,
+      "noise_update_every": 3,
+      "outlier_recall": 0.82,
+      "rmse": 5.581439488531664,
+      "warmup": 50,
+      "weight_ess": 0.19256489179806965
+    },
+    {
+      "converged": false,
+      "data_ess": 0.583733122322577,
+      "max_iter": 90,
+      "noise_update_every": 5,
+      "outlier_recall": 0.815,
+      "rmse": 5.854008745573679,
+      "warmup": 70,
+      "weight_ess": 0.2071888273004493
+    },
+    {
+      "converged": false,
+      "data_ess": 0.5851452496128425,
+      "max_iter": 120,
+      "noise_update_every": 5,
+      "outlier_recall": 0.82,
+      "rmse": 5.893471493767813,
+      "warmup": 100,
+      "weight_ess": 0.2075086952756649
+    }
+  ],
+  "seed": 0,
+  "source": {
+    "canonical_matrix_sha256": "3c2f8908ddf26a361d41844e40765652b35fc2335f1760b4a705c788f4dd3ba6",
+    "dataset": "Protein",
+    "raw_features": 9,
+    "route": 7,
+    "rows": 45730,
+    "source": "UCI Machine Learning Repository",
+    "source_archive_sha256": "ee6536c8cc415dc50d66bd247af7c9bc95c187ab8a4ea0f1f546b127206c1100",
+    "source_id": 265
+  }
+}
