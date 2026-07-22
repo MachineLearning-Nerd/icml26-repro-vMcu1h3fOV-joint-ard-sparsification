@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "title": "Repro - Joint ARD Sparsification",
+  "emoji": "✂️",
+  "space_id": "DineshAI/vMcu1h3fOV",
+  "paper": {
+    "arxiv_id": "2605.29908",
+    "openreview_id": "vMcu1h3fOV"
+  },
+  "tags": [
+    "icml2026-repro",
+    "paper-vMcu1h3fOV"
+  ],
+  "updated_at": "2026-07-22T19:31:52+00:00",
+  "root": {
+    "slug": "index",
+    "title": "Repro - Joint ARD Sparsification",
+    "file": "pages/index.md",
+    "children": [
+      {
+        "slug": "claim-1-sparse-robust",
+        "title": "Claim 1 — Sparse + robust",
+        "file": "pages/claim-1-sparse-robust/page.md",
+        "children": []
+      },
+      {
+        "slug": "claim-2-closed-form-em-ascent",
+        "title": "Claim 2 — Closed-form + EM ascent",
+        "file": "pages/claim-2-closed-form-em-ascent/page.md",
+        "children": []
+      },
+      {
+        "slug": "methods-environment",
+        "title": "Methods & environment",
+        "file": "pages/methods-environment/page.md",
+        "children": []
+      },
+      {
+        "slug": "negative-controls",
+        "title": "Negative controls",
+        "file": "pages/negative-controls/page.md",
+        "children": []
+      },
+      {
+        "slug": "conclusion",
+        "title": "Conclusion",
+        "file": "pages/conclusion/page.md",
+        "children": []
+      },
+      {
+        "slug": "claim-1-paper-scale-exactly-10",
+        "title": "Claim 1 — Paper-scale exactly 10",
+        "file": "pages/claim-1-paper-scale-exactly-10/page.md",
+        "children": []
+      },
+      {
+        "slug": "claim-2-all-schemes",
+        "title": "Claim 2 — all Section-3 update families",
+        "file": "pages/claim-2-all-schemes/page.md",
+        "children": []
+      }
+    ]
+  },
+  "agent_view_tokens": 5224,
+  "revision": "1784748712299941000"
+}
