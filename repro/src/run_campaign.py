@@ -51,6 +51,7 @@ def main() -> int:
             "claim1_paper_scale": list(range(10)),
             "claim2_primary": list(range(6)),
             "claim2_independent": list(range(7)),
+            "claim3_table3": list(range(10)),
             "claim4_existing_proxy": list(range(20)),
         },
     }, sort_keys=True), flush=True)
@@ -77,13 +78,14 @@ def main() -> int:
                 str(PRIMARY_C2),
             ],
         ),
+        run("claim3_table3", [py, "repro/src/claim3_table3.py"]),
         run("claim4_existing_proxy", [py, "repro/src/verify_joint_ard_robust_scale.py"]),
         run("claim1_bundle", [py, "repro/src/bundle_claim1_artifacts.py"]),
         run("claim1_publication_regression", [py, "repro/src/claim1_publish_gate.py"]),
     ]
     total = time.monotonic() - started
     print("CAMPAIGN_SUMMARY " + json.dumps({
-        "state": "judged_baseline_5_of_8",
+        "state": "claim3_mackay_protocol_endpoint",
         "steps": steps,
         "total_elapsed_seconds": total,
         "claims": {
@@ -93,7 +95,7 @@ def main() -> int:
             "4": "BLOCKED",
         },
         "limitations": [
-            "Claim 3 exact Table-3 percentages are not matched; Protein used EM, not paper-assigned MacKay.",
+            "Claim 3 final assessment is emitted by the protocol endpoint and may remain BLOCKED.",
             "Claim 4 uses synthetic Boston-scale proxy data and omits the Figure-3 grid.",
         ],
     }, sort_keys=True), flush=True)

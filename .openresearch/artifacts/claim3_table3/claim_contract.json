@@ -1,0 +1,21 @@
+{
+  "claim": 3,
+  "paper": "arXiv:2605.29908",
+  "source_anchor": "S5.T3",
+  "conditions": {
+    "contamination_fraction": 0.1,
+    "outlier_amplitude": 3.0,
+    "trials": 10,
+    "test_fraction": 0.2,
+    "maximum_training_rows": 2000,
+    "rff_features": 256
+  },
+  "targets": [
+    {"dataset": "Energy", "scheme": "EM", "rmse_reduction_percent": 32.07},
+    {"dataset": "Carbon", "scheme": "EM", "rmse_reduction_percent": 69.91},
+    {"dataset": "Protein", "scheme": "MacKay", "rmse_reduction_percent": 45.12}
+  ],
+  "verification_rule": "VERIFIED only if all three paper reductions fall within deterministic paired-seed 95% bootstrap intervals and the integrity checker passes.",
+  "falsification_rule": "No universal quantifier is present, so a divergent independent reproduction is not by itself a FALSIFIED verdict.",
+  "blocked_rule": "BLOCKED if a target is incompatible while unreleased random-feature and numerical implementation choices remain outcome-relevant."
+}
