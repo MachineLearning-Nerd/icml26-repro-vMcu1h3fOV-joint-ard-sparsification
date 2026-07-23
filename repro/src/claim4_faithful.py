@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+from dataclasses import dataclass
 import hashlib
 import json
 import platform
@@ -12,7 +13,7 @@ import sys
 import time
 
 import numpy as np
-from sklearn.linear_model import HuberRegressor
+from scipy.linalg import cho_factor, cho_solve
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from threadpoolctl import threadpool_limits
@@ -38,6 +39,10 @@ PAPER_L2_RMSE = {
     0.30: 5.216,
 }
 NONINFERIORITY_RMSE = 0.5
+HUBER_THRESHOLD = 1.35
+HUBER_RIDGE = 1e-4
+HUBER_TOLERANCE = 1e-8
+HUBER_MAX_ITER = 500
 RVM_PROTOCOL = Protocol(
     damping=0.02,
     warmup=50,
@@ -49,6 +54,17 @@ RVM_PROTOCOL = Protocol(
     patience=5,
     max_iter=1500,
 )
+
+
+@dataclass(frozen=True)
+class HuberIRLSFit:
+    coef: np.ndarray
+    intercept: float
+    iterations: int
+    converged: bool
+    relative_step: float
+    stationarity_error: float
+    objective: float
 
 
 def rmse(prediction: np.ndarray, target: np.ndarray) -> float:
@@ -75,6 +91,74 @@ def rbf_design(
         np.exp(-train_squared / (2.0 * lengthscale**2)),
         np.exp(-test_squared / (2.0 * lengthscale**2)),
         lengthscale,
+    )
+
+
+def fit_huber_irls(
+    design: np.ndarray,
+    target: np.ndarray,
+    threshold: float = HUBER_THRESHOLD,
+    ridge: float = HUBER_RIDGE,
+    tolerance: float = HUBER_TOLERANCE,
+    max_iter: int = HUBER_MAX_ITER,
+) -> HuberIRLSFit:
+    """Solve convex ridge-Huber regression with an unpenalized intercept."""
+    augmented = np.column_stack([design, np.ones(len(design))])
+    penalty = np.zeros(augmented.shape[1])
+    penalty[:-1] = ridge
+
+    def solve(weights: np.ndarray) -> np.ndarray:
+        gram = (augmented.T * weights) @ augmented
+        gram.flat[:: gram.shape[0] + 1] += penalty
+        rhs = augmented.T @ (weights * target)
+        factor = cho_factor(gram, lower=True, check_finite=False)
+        return cho_solve(factor, rhs, check_finite=False)
+
+    def diagnostics(parameters: np.ndarray) -> tuple[float, float]:
+        residual = target - augmented @ parameters
+        absolute = np.abs(residual)
+        loss = np.where(
+            absolute <= threshold,
+            0.5 * residual**2,
+            threshold * (absolute - 0.5 * threshold),
+        )
+        objective = float(
+            np.sum(loss) + 0.5 * ridge * np.dot(parameters[:-1], parameters[:-1])
+        )
+        gradient = -(augmented.T @ np.clip(residual, -threshold, threshold))
+        gradient[:-1] += ridge * parameters[:-1]
+        scale = 1.0 + np.linalg.norm(augmented.T @ target, ord=np.inf)
+        stationarity = float(np.linalg.norm(gradient, ord=np.inf) / scale)
+        return objective, stationarity
+
+    parameters = solve(np.ones(len(target)))
+    relative_step = float("inf")
+    objective, stationarity = diagnostics(parameters)
+    converged = False
+    iterations = 0
+    for iterations in range(1, max_iter + 1):
+        residual = target - augmented @ parameters
+        weights = np.minimum(
+            1.0, threshold / np.maximum(np.abs(residual), np.finfo(float).eps)
+        )
+        updated = solve(weights)
+        relative_step = float(
+            np.linalg.norm(updated - parameters) /
+            (1.0 + np.linalg.norm(parameters))
+        )
+        parameters = updated
+        objective, stationarity = diagnostics(parameters)
+        if relative_step <= tolerance and stationarity <= tolerance:
+            converged = True
+            break
+    return HuberIRLSFit(
+        coef=parameters[:-1],
+        intercept=float(parameters[-1]),
+        iterations=iterations,
+        converged=converged,
+        relative_step=relative_step,
+        stationarity_error=stationarity,
+        objective=objective,
     )
 
 
@@ -132,14 +216,8 @@ def one_trial(X: np.ndarray, y: np.ndarray, source: dict, seed: int, level: floa
     )
     predictions["student_t"] = phi_test @ student_coef
     noise["student_t"] = student_noise
-    huber = HuberRegressor(
-        epsilon=1.35,
-        alpha=1e-4,
-        fit_intercept=True,
-        max_iter=5000,
-        tol=1e-5,
-    ).fit(phi_train, contaminated)
-    predictions["huber"] = huber.predict(phi_test)
+    huber = fit_huber_irls(phi_train, contaminated)
+    predictions["huber"] = phi_test @ huber.coef + huber.intercept
 
     def original(values: np.ndarray) -> np.ndarray:
         return y_scaler.inverse_transform(values.reshape(-1, 1)).ravel()
@@ -166,8 +244,11 @@ def one_trial(X: np.ndarray, y: np.ndarray, source: dict, seed: int, level: floa
         "joint_converged": fitted["joint"].converged,
         "homoscedastic_iterations": fitted["homoscedastic"].iterations,
         "homoscedastic_converged": fitted["homoscedastic"].converged,
-        "huber_iterations": int(huber.n_iter_),
-        "huber_converged": bool(huber.n_iter_ < 5000),
+        "huber_iterations": huber.iterations,
+        "huber_converged": huber.converged,
+        "huber_relative_step": huber.relative_step,
+        "huber_stationarity_error": huber.stationarity_error,
+        "huber_objective": huber.objective,
     }
     print("CLAIM4_BOSTON_ROW " + json.dumps(row, sort_keys=True), flush=True)
     return row
@@ -360,6 +441,14 @@ def main() -> int:
             "test_fraction": 0.2,
             "kernel": "RBF RVM; all 506 covariates are centers (d=n), median scalar lengthscale, no embedded bias",
             "noninferiority_margin_rmse": NONINFERIORITY_RMSE,
+            "huber_optimizer": {
+                "solver": "convex IRLS with fixed standardized-target threshold",
+                "threshold": HUBER_THRESHOLD,
+                "ridge": HUBER_RIDGE,
+                "tolerance": HUBER_TOLERANCE,
+                "max_iter": HUBER_MAX_ITER,
+                "intercept_penalized": False,
+            },
             "rvm_optimizer": {
                 "scheme": "l2-IRLS/EM-equivalent closed form",
                 **RVM_PROTOCOL.__dict__,
@@ -373,6 +462,7 @@ def main() -> int:
         "limitations": [
             "The paper does not release its split seeds or fixed scalar RBF lengthscale.",
             "Following the paper's explicit d=n=506 statement uses all test covariates as transductive RBF centers, but never test targets; the scaler is fit on training covariates only.",
+            "The paper used scikit-learn HuberRegressor, which did not terminate after 5,000 iterations on this rank-deficient design; this run solves a fixed-threshold convex Huber loss by IRLS and verifies its gradient stationarity.",
         ],
         "elapsed_seconds": time.monotonic() - started,
     }

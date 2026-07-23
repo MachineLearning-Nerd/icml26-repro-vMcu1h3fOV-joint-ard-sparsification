@@ -32,6 +32,9 @@ def read_rows() -> list[dict]:
         "joint_outlier_recall",
         "homoscedastic_noise_cv",
         "huber_iterations",
+        "huber_relative_step",
+        "huber_stationarity_error",
+        "huber_objective",
         "joint_iterations",
         "homoscedastic_iterations",
     }
@@ -75,6 +78,12 @@ def validate(payload: dict, rows: list[dict]) -> list[str]:
         errors.append("homoscedastic negative control has unequal noise")
     if not all(row["huber_converged"] == "True" for row in rows):
         errors.append("Huber did not converge")
+    if any(
+        row["huber_relative_step"] > 1e-8
+        or row["huber_stationarity_error"] > 1e-8
+        for row in rows
+    ):
+        errors.append("Huber convergence diagnostics exceed tolerance")
     if payload.get("assessment") != "VERIFIED" or not all(payload.get("gates", {}).values()):
         errors.append("claim contract is not VERIFIED")
 
@@ -108,6 +117,9 @@ def main() -> int:
     blocked = copy.deepcopy(payload)
     blocked["assessment"] = "BLOCKED"
     mutations.append(bool(validate(blocked, rows)))
+    nonstationary = copy.deepcopy(rows)
+    nonstationary[0]["huber_stationarity_error"] = 1.0
+    mutations.append(bool(validate(payload, nonstationary)))
     mutation_rejections = sum(mutations)
 
     print(json.dumps({
@@ -116,10 +128,10 @@ def main() -> int:
         "levels": sorted(EXPECTED_LEVELS),
         "errors": errors,
         "mutation_rejections": mutation_rejections,
-        "mutations_total": 3,
-        "pass": not errors and mutation_rejections == 3,
+        "mutations_total": 4,
+        "pass": not errors and mutation_rejections == 4,
     }, sort_keys=True))
-    return 0 if not errors and mutation_rejections == 3 else 2
+    return 0 if not errors and mutation_rejections == 4 else 2
 
 
 if __name__ == "__main__":

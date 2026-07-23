@@ -24,5 +24,9 @@ precise kernel-construction order. To implement `d=n=506` literally, this
 reproduction uses all standardized Boston covariates as kernel centers and
 computes their median-distance lengthscale. This is transductive use of test
 covariates, not test targets; feature standardization is fit on training rows.
-These declared choices can verify alignment but a divergent result would not
-falsify a universal statement.
+The paper reports scikit-learn for Huber but no solver settings. Direct
+`HuberRegressor` fits failed to terminate after 5,000 iterations on the
+rank-deficient full-center design, so the final candidate uses a deterministic
+fixed-threshold convex Huber-loss IRLS baseline with explicit stationarity
+checks. These declared choices can verify alignment but a divergent result
+would not falsify a universal statement.

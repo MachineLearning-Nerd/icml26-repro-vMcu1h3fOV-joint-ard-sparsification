@@ -15,16 +15,19 @@ lengthscale before contamination. It applies Appendix D.2's signed
 all 506 standardized covariates are used as RBF centers, with no embedded bias.
 This is transductive use of test covariates but never test targets; the feature
 scaler is fit on training rows. Student-t uses the retained 60-step evidence
-solver, and Huber uses scikit-learn as specified by Appendix D.2. Evaluation is
-on the untouched real Boston test targets in original units.
+solver. The paper used scikit-learn for Huber, but direct fits on this
+rank-deficient design did not terminate after 5,000 iterations. The final
+candidate instead solves a fixed-threshold convex Huber loss by deterministic
+IRLS. Evaluation is on the untouched real Boston test targets in original
+units.
 
 Joint and homoscedastic RVMs use the Appendix-D.1 fast authorized endpoint:
 arithmetic damping 0.02, 50 weight-only warm-up steps, variance updates every
 two steps, initialization 0.1, clipping `[1e-6,1e6]`, and at most 1,500 steps.
-Huber uses its own intercept because the shared 506-column kernel basis has no
-bias column. It retains scikit-learn's default epsilon, ridge penalty, and
-tolerance, with the maximum iteration count raised to 5,000; all fits must
-terminate before that cap.
+Huber uses threshold 1.35 in standardized-target units, ridge `1e-4` on the
+506 kernel coefficients, and an unpenalized intercept. IRLS is capped at 500
+steps and must satisfy both relative-step and normalized-gradient stationarity
+at `1e-8`. The independent checker recomputes and mutation-tests these fields.
 
 The predeclared noninferiority margin remains 0.5 Boston RMSE, approximately the
 paper's per-cell trial standard deviation in Table 6. A deterministic
