@@ -1,0 +1,24 @@
+{
+  "claim": 4,
+  "paper": "arXiv:2605.29908",
+  "source_anchors": ["S5.F3", "S5.F4", "A5.T6", "A4.SS2"],
+  "figure3": {
+    "n": 500,
+    "d": 50,
+    "test_rows": 1000,
+    "trials_per_cell": 10,
+    "weight_grid": {"rho": 0.2, "multiplier": 10, "support": [0.1, 0.2, 0.4], "sigma": [0.1, 0.2, 0.5]},
+    "data_grid": {"support": 0.2, "sigma": 0.2, "rho": [0.05, 0.1, 0.2], "multiplier": [2, 5, 10]}
+  },
+  "figure4": {
+    "dataset": "Boston",
+    "rows": 506,
+    "test_fraction": 0.2,
+    "trials": 20,
+    "contamination": [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3],
+    "basis": "RBF RVM with fixed scalar lengthscale",
+    "methods": ["joint ARD", "homoscedastic RVM", "Student-t", "Huber"]
+  },
+  "verification_rule": "Real-data gates, both robust-baseline noninferiority checks at a predeclared 0.5 RMSE margin, homoscedastic superiority at >=10% contamination, mechanism controls, and both Figure-3 high-sparsity/low-contamination patterns must all pass.",
+  "falsification_rule": "The paper does not quantify over all seeds or fixed scalar lengthscales, so divergence under the declared implementation is BLOCKED rather than a universal falsification."
+}

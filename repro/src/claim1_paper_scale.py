@@ -188,6 +188,7 @@ def run_synthetic_route() -> tuple[list[dict], dict]:
                 "rmse_joint": _rmse(Xtest @ joint.coef, ytest),
                 "rmse_model_only": _rmse(Xtest @ model_only.coef, ytest),
                 "weight_recall_joint": _top_k_recall(1.0 / joint.gamma, support),
+                "weight_recall_model_only": _top_k_recall(1.0 / model_only.gamma, support),
                 "outlier_recall_joint": _top_k_recall(joint.noise_var, outliers),
                 "weight_ess_joint": effective_support(1.0 / joint.gamma),
                 "data_ess_joint": effective_support(1.0 / joint.noise_var),

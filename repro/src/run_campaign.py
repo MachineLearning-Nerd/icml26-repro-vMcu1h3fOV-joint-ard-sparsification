@@ -53,6 +53,7 @@ def main() -> int:
             "claim2_independent": list(range(7)),
             "claim3_table3": list(range(10)),
             "claim4_existing_proxy": list(range(20)),
+            "claim4_faithful": list(range(20)),
         },
     }, sort_keys=True), flush=True)
 
@@ -80,6 +81,11 @@ def main() -> int:
         ),
         run("claim3_table3", [py, "repro/src/claim3_table3.py"]),
         run("claim4_existing_proxy", [py, "repro/src/verify_joint_ard_robust_scale.py"]),
+        run("claim4_faithful_regenerate", [py, "repro/src/claim4_faithful.py"]),
+        run(
+            "claim4_faithful_independent",
+            [py, "repro/src/verify_claim4_faithful.py"],
+        ),
         run("claim1_bundle", [py, "repro/src/bundle_claim1_artifacts.py"]),
         run("claim1_publication_regression", [py, "repro/src/claim1_publish_gate.py"]),
     ]
@@ -92,11 +98,11 @@ def main() -> int:
             "1": "VERIFIED",
             "2": "VERIFIED",
             "3": "BLOCKED",
-            "4": "BLOCKED",
+            "4": "evaluated_by_fail_closed_faithful_checker",
         },
         "limitations": [
             "Claim 3 final assessment is emitted by the protocol endpoint and may remain BLOCKED.",
-            "Claim 4 uses synthetic Boston-scale proxy data and omits the Figure-3 grid.",
+            "The old synthetic Claim 4 proxy is retained only as cumulative historical evidence.",
         ],
     }, sort_keys=True), flush=True)
     return 0
