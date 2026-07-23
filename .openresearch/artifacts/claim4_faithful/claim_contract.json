@@ -16,7 +16,7 @@
     "test_fraction": 0.2,
     "trials": 20,
     "contamination": [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3],
-    "basis": "RBF RVM with fixed scalar lengthscale",
+    "basis": "RBF RVM with all 506 covariates as centers (d=n), no embedded bias, fixed scalar lengthscale",
     "methods": ["joint ARD", "homoscedastic RVM", "Student-t", "Huber"]
   },
   "verification_rule": "Real-data gates, converged Huber fits, both robust-baseline noninferiority checks at a predeclared 0.5 RMSE margin, homoscedastic superiority at >=10% contamination, mechanism controls, and both Figure-3 categorical high-sparsity/low-contamination patterns must all pass.",

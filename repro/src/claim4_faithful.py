@@ -56,21 +56,24 @@ def rmse(prediction: np.ndarray, target: np.ndarray) -> float:
 
 
 def rbf_design(
-    X_train: np.ndarray, X_test: np.ndarray
+    X_train: np.ndarray, X_test: np.ndarray, X_centers: np.ndarray
 ) -> tuple[np.ndarray, np.ndarray, float]:
-    """RVM basis with a fixed, training-only scalar median lengthscale."""
-    squared = np.sum((X_train[:, None, :] - X_train[None, :, :]) ** 2, axis=2)
-    positive = squared[np.triu_indices_from(squared, k=1)]
+    """RVM basis with all n covariates as centers, matching paper d=n."""
+    center_squared = np.sum(
+        (X_centers[:, None, :] - X_centers[None, :, :]) ** 2, axis=2
+    )
+    positive = center_squared[np.triu_indices_from(center_squared, k=1)]
     positive = positive[positive > 1e-12]
     lengthscale = float(np.sqrt(np.median(positive)))
-    train_kernel = np.exp(-squared / (2.0 * lengthscale**2))
-    test_squared = np.sum(
-        (X_test[:, None, :] - X_train[None, :, :]) ** 2, axis=2
+    train_squared = np.sum(
+        (X_train[:, None, :] - X_centers[None, :, :]) ** 2, axis=2
     )
-    test_kernel = np.exp(-test_squared / (2.0 * lengthscale**2))
+    test_squared = np.sum(
+        (X_test[:, None, :] - X_centers[None, :, :]) ** 2, axis=2
+    )
     return (
-        np.column_stack([train_kernel, np.ones(len(train_kernel))]),
-        np.column_stack([test_kernel, np.ones(len(test_kernel))]),
+        np.exp(-train_squared / (2.0 * lengthscale**2)),
+        np.exp(-test_squared / (2.0 * lengthscale**2)),
         lengthscale,
     )
 
@@ -89,9 +92,12 @@ def one_trial(X: np.ndarray, y: np.ndarray, source: dict, seed: int, level: floa
     x_scaler = StandardScaler().fit(X_train)
     X_train = x_scaler.transform(X_train)
     X_test = x_scaler.transform(X_test)
+    X_centers = x_scaler.transform(X)
     y_scaler = StandardScaler().fit(y_train.reshape(-1, 1))
     y_clean = y_scaler.transform(y_train.reshape(-1, 1)).ravel()
-    phi_train, phi_test, lengthscale = rbf_design(X_train, X_test)
+    phi_train, phi_test, lengthscale = rbf_design(
+        X_train, X_test, X_centers
+    )
 
     rng = np.random.default_rng(seed + 260_529_080 + int(level * 100))
     contaminated = y_clean.copy()
@@ -129,9 +135,9 @@ def one_trial(X: np.ndarray, y: np.ndarray, source: dict, seed: int, level: floa
     huber = HuberRegressor(
         epsilon=1.35,
         alpha=1e-4,
-        fit_intercept=False,
+        fit_intercept=True,
         max_iter=5000,
-        tol=1e-6,
+        tol=1e-5,
     ).fit(phi_train, contaminated)
     predictions["huber"] = huber.predict(phi_test)
 
@@ -352,7 +358,7 @@ def main() -> int:
             "seeds": list(SEEDS),
             "levels": list(LEVELS),
             "test_fraction": 0.2,
-            "kernel": "RBF RVM; training-only median scalar lengthscale",
+            "kernel": "RBF RVM; all 506 covariates are centers (d=n), median scalar lengthscale, no embedded bias",
             "noninferiority_margin_rmse": NONINFERIORITY_RMSE,
             "rvm_optimizer": {
                 "scheme": "l2-IRLS/EM-equivalent closed form",
@@ -366,7 +372,7 @@ def main() -> int:
         "assessment": "VERIFIED" if verified else "BLOCKED",
         "limitations": [
             "The paper does not release its split seeds or fixed scalar RBF lengthscale.",
-            "Training observations only are used as RVM centers to avoid test leakage; the basis has 404 kernels plus a bias.",
+            "Following the paper's explicit d=n=506 statement uses all test covariates as transductive RBF centers, but never test targets; the scaler is fit on training covariates only.",
         ],
         "elapsed_seconds": time.monotonic() - started,
     }

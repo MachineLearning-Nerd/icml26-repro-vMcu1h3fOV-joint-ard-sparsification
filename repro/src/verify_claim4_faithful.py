@@ -54,10 +54,10 @@ def validate(payload: dict, rows: list[dict]) -> list[str]:
         row["original_rows"] != 506
         or row["train_rows"] != 404
         or row["test_rows"] != 102
-        or row["kernel_basis_columns"] != 405
+        or row["kernel_basis_columns"] != 506
         for row in rows
     ):
-        errors.append("schema or leakage invariant mismatch")
+        errors.append("schema or full-center invariant mismatch")
     if any(int(row["seed"]) not in range(20) for row in rows):
         errors.append("seed outside 0..19")
     if any(

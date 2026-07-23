@@ -11,13 +11,18 @@ at support 0.2 and sigma 0.2 and varies rho and multiplier.
 
 Figure 4 (`S5.F4`) uses real Boston data (`n=506`), a 20% test split, twenty
 trials, an RBF RVM with a fixed scalar lengthscale, and contamination from 0%
-through 30%. Table 6 (`A5.T6`) gives the seven l2-IRLS RMSE means. Section 5.3
+through 30%. Section 5.3 explicitly states that the RVM basis has
+`d=n=506`. Table 6 (`A5.T6`) gives the seven l2-IRLS RMSE means. Section 5.3
 claims consistently low RMSE and improved robustness relative to non-robust
 alternatives; the paper describes the comparison with Student-t and Huber as
-competitive, not a universal win.
+competitive, not a universal win. The Figure 4 PNG was retrieved from the
+ar5iv asset URL on 2026-07-23 with an explicit browser User-Agent and has
+SHA-256 `cb5857bfaaabc3bff2b8964b1e70b8070ddd3c914aa0ccc3a7daa73629be71a8`.
 
-The source does not publish split seeds, the scalar lengthscale value, or
-whether test points are admitted as RVM centers. This reproduction uses a
-training-only median-distance lengthscale and training centers only, preventing
-test leakage. These declared choices can verify alignment but a divergent
-result would not falsify a universal statement.
+The source does not publish split seeds, the scalar lengthscale value, or the
+precise kernel-construction order. To implement `d=n=506` literally, this
+reproduction uses all standardized Boston covariates as kernel centers and
+computes their median-distance lengthscale. This is transductive use of test
+covariates, not test targets; feature standardization is fit on training rows.
+These declared choices can verify alignment but a divergent result would not
+falsify a universal statement.
