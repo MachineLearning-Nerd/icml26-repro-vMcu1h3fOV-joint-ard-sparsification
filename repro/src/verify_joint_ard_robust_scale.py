@@ -17,6 +17,7 @@ how per-sample noise variances lambda_i are set (the robustness mechanism):
 numpy/scipy, fixed seeds, deterministic; prints RESULTS_SHA256.
 """
 import numpy as np, json, hashlib
+from threadpoolctl import threadpool_limits
 
 ELL = 1.5             # RBF lengthscale
 N_BOSTON = 506        # Fig 4 dataset scale (Boston)
@@ -154,4 +155,5 @@ def main():
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    with threadpool_limits(limits=8):
+        raise SystemExit(main())

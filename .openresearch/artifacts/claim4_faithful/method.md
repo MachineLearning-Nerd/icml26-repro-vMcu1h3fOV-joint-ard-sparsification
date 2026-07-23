@@ -32,3 +32,8 @@ and “low contamination” and warns that recovery degrades for increasingly
 sparse signals and scarce contamination. The categorical audit therefore
 compares support 0.1/0.2 against 0.4 and contamination 0.05/0.1 against 0.2;
 it does not demand that the single most extreme point be the maximum.
+
+All matrix-heavy entrypoints cap their BLAS thread pool at eight through
+`threadpoolctl`. This committed performance setting prevents oversubscription
+on the 64-core `cpu-upgrade` host; it does not alter seeds, floating-point
+precision, update equations, stopping rules, or the fixed campaign command.

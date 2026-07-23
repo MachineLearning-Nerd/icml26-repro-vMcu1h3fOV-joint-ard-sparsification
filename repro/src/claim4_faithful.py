@@ -15,6 +15,7 @@ import numpy as np
 from sklearn.linear_model import HuberRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+from threadpoolctl import threadpool_limits
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from claim1_datasets import load_route_dataset
@@ -380,4 +381,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    with threadpool_limits(limits=8):
+        raise SystemExit(main())
