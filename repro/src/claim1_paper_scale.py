@@ -56,8 +56,10 @@ def _rff_design(X_train: np.ndarray, X_test: np.ndarray, seed: int):
     rff = RBFSampler(gamma=gamma, n_components=256, random_state=seed)
     phi_train = rff.fit_transform(train_scaled)
     phi_test = rff.transform(test_scaled)
-    phi_scaler = StandardScaler().fit(phi_train)
-    return phi_scaler.transform(phi_train), phi_scaler.transform(phi_test), gamma
+    # Section 5.2 standardizes the input features before the RFF mapping.  It
+    # does not specify a second column-wise standardization of the correlated
+    # RFF design, so preserve the RBF approximation's native scaling.
+    return phi_train, phi_test, gamma
 
 
 def _prepare_tabular(X: np.ndarray, y: np.ndarray, seed: int):

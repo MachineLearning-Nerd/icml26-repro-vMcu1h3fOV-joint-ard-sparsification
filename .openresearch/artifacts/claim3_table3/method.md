@@ -17,3 +17,8 @@ OpenResearch run log is a complete evidence channel.
 This is a protocol endpoint, not a tuned answer. It was selected before seeing
 this sibling's outputs because the fast endpoint collapsed sample ESS far below
 Table 3 and had not converged after 1,500 steps.
+
+This descendant also corrects the preprocessing order to the explicit Section
+5.2 wording: raw input features are standardized and then mapped through 256
+RFFs. The inherited reproduction had applied an additional, undocumented
+column-wise standardization after the RFF mapping. No other setting changes.

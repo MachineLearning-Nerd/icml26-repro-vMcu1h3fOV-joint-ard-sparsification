@@ -17,6 +17,10 @@ weight-only warm-up steps, and heteroscedastic updates every 2--5 iterations.
 It gives an example initialization of 0.1 and requires a relative log-parameter
 tolerance of 1e-6 for five patience steps.
 
+Section 5.2 states that features are standardized and mapped via random Fourier
+features. It does not state that the resulting RFF columns are standardized a
+second time. This descendant follows the stated order literally.
+
 The paper does not state the ten split/RFF seeds, RFF bandwidth rule, exact
 point in each implementation range, or a maximum iteration count. The linked
 author repository contains no experiment code at commit
