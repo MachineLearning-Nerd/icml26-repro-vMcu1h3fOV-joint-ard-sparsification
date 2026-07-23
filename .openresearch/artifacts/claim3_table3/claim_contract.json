@@ -15,7 +15,7 @@
     {"dataset": "Carbon", "scheme": "EM", "rmse_reduction_percent": 69.91},
     {"dataset": "Protein", "scheme": "MacKay", "rmse_reduction_percent": 45.12}
   ],
-  "verification_rule": "VERIFIED only if all three paper reductions fall within deterministic paired-seed 95% bootstrap intervals and the integrity checker passes.",
+  "verification_rule": "VERIFIED only if all three paper reductions and paper sample-ESS values fall within deterministic paired-seed 95% bootstrap intervals, mean weight ESS is 2-45%, all fits meet the paper stopping rule, and the integrity checker passes.",
   "falsification_rule": "No universal quantifier is present, so a divergent independent reproduction is not by itself a FALSIFIED verdict.",
   "blocked_rule": "BLOCKED if a target is incompatible while unreleased random-feature and numerical implementation choices remain outcome-relevant."
 }

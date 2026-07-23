@@ -27,21 +27,22 @@ ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "outputs" / "claim3_table3"
 SEEDS = tuple(range(10))
 PAPER_REDUCTIONS = {"Energy": 32.07, "Carbon": 69.91, "Protein": 45.12}
+PAPER_SAMPLE_ESS = {"Energy": 91.2, "Carbon": 92.0, "Protein": 90.2}
 ROUTES = {"Energy": 5, "Carbon": 6, "Protein": 7}
 SCHEMES = {"Energy": "em", "Carbon": "em", "Protein": "mackay"}
 
 
 @dataclass(frozen=True)
 class Protocol:
-    damping: float = 0.02
-    warmup: int = 50
-    noise_update_every: int = 2
-    clip_min: float = 1e-6
-    clip_max: float = 1e6
+    damping: float = 0.005
+    warmup: int = 300
+    noise_update_every: int = 5
+    clip_min: float = 1e-3
+    clip_max: float = 1e2
     init: float = 0.1
     tolerance: float = 1e-6
     patience: int = 5
-    max_iter: int = 1500
+    max_iter: int = 5000
 
 
 CONFIG = Protocol()
@@ -177,6 +178,12 @@ def bootstrap_reduction_ci(joint: np.ndarray, model: np.ndarray) -> tuple[float,
     return tuple(map(float, np.quantile(reductions, [0.025, 0.975])))
 
 
+def bootstrap_mean_ci(values: np.ndarray) -> tuple[float, float]:
+    rng = np.random.default_rng(260529908)
+    indices = rng.integers(0, len(values), size=(20_000, len(values)))
+    return tuple(map(float, np.quantile(values[indices].mean(axis=1), [0.025, 0.975])))
+
+
 def run_dataset(name: str) -> tuple[list[dict], dict]:
     route = ROUTES[name]
     scheme = SCHEMES[name]
@@ -227,6 +234,9 @@ def run_dataset(name: str) -> tuple[list[dict], dict]:
     observed = float(100.0 * (model_values.mean() - joint_values.mean()) / model_values.mean())
     ci_low, ci_high = bootstrap_reduction_ci(joint_values, model_values)
     target = PAPER_REDUCTIONS[name]
+    sample_ess = np.array([row["sample_ess_percent"] for row in rows])
+    ess_low, ess_high = bootstrap_mean_ci(sample_ess)
+    ess_target = PAPER_SAMPLE_ESS[name]
     summary = {
         "dataset": name,
         "scheme": scheme,
@@ -234,11 +244,16 @@ def run_dataset(name: str) -> tuple[list[dict], dict]:
         "observed_reduction_percent": observed,
         "bootstrap_95ci_percent": [ci_low, ci_high],
         "paper_value_in_bootstrap_ci": bool(ci_low <= target <= ci_high),
+        "paper_sample_ess_percent": ess_target,
+        "sample_ess_bootstrap_95ci_percent": [ess_low, ess_high],
+        "paper_sample_ess_in_bootstrap_ci": bool(ess_low <= ess_target <= ess_high),
         "mean_joint_rmse": float(joint_values.mean()),
         "mean_model_only_rmse": float(model_values.mean()),
         "joint_wins": int(np.sum(joint_values < model_values)),
         "mean_weight_ess_percent": float(np.mean([row["weight_ess_percent"] for row in rows])),
         "mean_sample_ess_percent": float(np.mean([row["sample_ess_percent"] for row in rows])),
+        "all_joint_converged": bool(all(row["joint_converged"] for row in rows)),
+        "all_model_converged": bool(all(row["model_converged"] for row in rows)),
         "all_finite": bool(np.isfinite(
             [[row["joint_rmse"], row["model_only_rmse"]] for row in rows]
         ).all()),
@@ -277,13 +292,21 @@ def main() -> int:
         ),
         "assessment": (
             "VERIFIED"
-            if all(summary["paper_value_in_bootstrap_ci"] for summary in summaries)
+            if all(
+                summary["paper_value_in_bootstrap_ci"]
+                and summary["paper_sample_ess_in_bootstrap_ci"]
+                and summary["all_joint_converged"]
+                and summary["all_model_converged"]
+                and 2.0 <= summary["mean_weight_ess_percent"] <= 45.0
+                for summary in summaries
+            )
             else "BLOCKED"
         ),
         "assessment_rule": (
-            "VERIFIED only if every paper reduction lies inside the paired-seed "
-            "95% bootstrap interval; otherwise BLOCKED because the released paper "
-            "does not specify RFF draws/bandwidth or exact safeguard choices."
+            "VERIFIED only if every paper reduction and sample-ESS value lies inside "
+            "its paired-seed 95% bootstrap interval, mean weight ESS is 2--45%, all "
+            "fits meet the paper stopping rule, and integrity passes; otherwise "
+            "BLOCKED because unreleased RFF/bandwidth/safeguard choices remain."
         ),
     }
     output = OUT / "results.json"
