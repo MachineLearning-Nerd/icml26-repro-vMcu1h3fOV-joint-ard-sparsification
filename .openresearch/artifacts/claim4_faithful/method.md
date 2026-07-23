@@ -16,7 +16,19 @@ and Student-t use the same 60-step evidence solver; Huber uses scikit-learn as
 specified by Appendix D.2. Evaluation is on the untouched real Boston test
 targets in original units.
 
-The predeclared noninferiority margin is 0.5 Boston RMSE, approximately the
+Joint and homoscedastic RVMs use the Appendix-D.1 fast authorized endpoint:
+arithmetic damping 0.02, 50 weight-only warm-up steps, variance updates every
+two steps, initialization 0.1, clipping `[1e-6,1e6]`, and at most 1,500 steps.
+Huber disables its own intercept because the shared RVM basis already contains
+a bias column; all Huber fits must terminate before their 5,000-step cap.
+
+The predeclared noninferiority margin remains 0.5 Boston RMSE, approximately the
 paper's per-cell trial standard deviation in Table 6. A deterministic
 independent checker recomputes summaries, checks the exact 20x7 design and
 dataset hash, verifies equal homoscedastic noise, and rejects three mutations.
+
+Figure 3's source simultaneously says gains are largest under “high sparsity”
+and “low contamination” and warns that recovery degrades for increasingly
+sparse signals and scarce contamination. The categorical audit therefore
+compares support 0.1/0.2 against 0.4 and contamination 0.05/0.1 against 0.2;
+it does not demand that the single most extreme point be the maximum.

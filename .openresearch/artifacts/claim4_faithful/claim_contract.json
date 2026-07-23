@@ -19,6 +19,6 @@
     "basis": "RBF RVM with fixed scalar lengthscale",
     "methods": ["joint ARD", "homoscedastic RVM", "Student-t", "Huber"]
   },
-  "verification_rule": "Real-data gates, both robust-baseline noninferiority checks at a predeclared 0.5 RMSE margin, homoscedastic superiority at >=10% contamination, mechanism controls, and both Figure-3 high-sparsity/low-contamination patterns must all pass.",
+  "verification_rule": "Real-data gates, converged Huber fits, both robust-baseline noninferiority checks at a predeclared 0.5 RMSE margin, homoscedastic superiority at >=10% contamination, mechanism controls, and both Figure-3 categorical high-sparsity/low-contamination patterns must all pass.",
   "falsification_rule": "The paper does not quantify over all seeds or fixed scalar lengthscales, so divergence under the declared implementation is BLOCKED rather than a universal falsification."
 }

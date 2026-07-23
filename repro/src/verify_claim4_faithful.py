@@ -32,6 +32,8 @@ def read_rows() -> list[dict]:
         "joint_outlier_recall",
         "homoscedastic_noise_cv",
         "huber_iterations",
+        "joint_iterations",
+        "homoscedastic_iterations",
     }
     for row in rows:
         for key in numeric:
@@ -71,6 +73,8 @@ def validate(payload: dict, rows: list[dict]) -> list[str]:
         errors.append("nonpositive RMSE")
     if max(row["homoscedastic_noise_cv"] for row in rows) >= 1e-12:
         errors.append("homoscedastic negative control has unequal noise")
+    if not all(row["huber_converged"] == "True" for row in rows):
+        errors.append("Huber did not converge")
     if payload.get("assessment") != "VERIFIED" or not all(payload.get("gates", {}).values()):
         errors.append("claim contract is not VERIFIED")
 
