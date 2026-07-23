@@ -1,0 +1,39 @@
+{
+  "dataset": "ICML-2026-agent-repro/verdicts",
+  "dataset_revision": "bf724f10201a57c138f86e6677b543750724ae77",
+  "dataset_sha256": "8b30181aa7db8c42e973c4f580172c3e9a705f416c99010b6dcee70d63cc5e21",
+  "filter": {
+    "field": "space_id",
+    "match": "exact",
+    "value": "DineshAI/vMcu1h3fOV"
+  },
+  "match_count": 1,
+  "record": {
+    "space_id": "DineshAI/vMcu1h3fOV",
+    "orid": "vMcu1h3fOV",
+    "paper_title": "Joint Model and Data Sparsification via the Marginal Likelihood",
+    "sha": "ebc967de3ce8a9811122de258ee13f2ee66d5735",
+    "judged_at": "2026-07-23T06:58:17+00:00",
+    "model": "zai-org/GLM-5.2",
+    "claims": [
+      {
+        "claim": "Joint ARD extends standard Automatic Relevance Determination by introducing per-sample noise variances lambda_i as primary parameters, yielding a heteroscedastic marginal-likelihood objective that jointly sparsifies features and down-weights outlying samples.",
+        "verdict": "verified"
+      },
+      {
+        "claim": "The heteroscedastic objective admits closed-form updates across EM, MacKay, l1-IRLS, and l2-IRLS schemes while preserving conjugacy.",
+        "verdict": "verified"
+      },
+      {
+        "claim": "Table 3 quantitative RMSE reductions and ESS behavior.",
+        "verdict": "inconclusive"
+      },
+      {
+        "claim": "Figure 4 real-data RVM robustness and Figure 3 sparse/low-contamination gain regime.",
+        "verdict": "toy"
+      }
+    ],
+    "quality": "medium",
+    "score": "5/8"
+  }
+}
