@@ -82,12 +82,12 @@ def main() -> int:
         run("claim3_table3", [py, "repro/src/claim3_table3.py"]),
         run("claim4_existing_proxy", [py, "repro/src/verify_joint_ard_robust_scale.py"]),
         run("claim4_faithful_regenerate", [py, "repro/src/claim4_faithful.py"]),
+        run("claim1_bundle", [py, "repro/src/bundle_claim1_artifacts.py"]),
+        run("claim1_publication_regression", [py, "repro/src/claim1_publish_gate.py"]),
         run(
             "claim4_faithful_independent",
             [py, "repro/src/verify_claim4_faithful.py"],
         ),
-        run("claim1_bundle", [py, "repro/src/bundle_claim1_artifacts.py"]),
-        run("claim1_publication_regression", [py, "repro/src/claim1_publish_gate.py"]),
     ]
     total = time.monotonic() - started
     print("CAMPAIGN_SUMMARY " + json.dumps({
